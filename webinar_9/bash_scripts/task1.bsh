@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    echo "Введите имя файла:"
+    read filename
+    echo "Введите слово для поиска:"
+    read searchword
+else
+    filename="$1"
+    searchword="$2"
+fi
+
+count=$(grep -o "$searchword" "$filename" | wc -l)
+
+echo "Количество вхождений слова \"$searchword\" в файле \"$filename\": $count"
+
