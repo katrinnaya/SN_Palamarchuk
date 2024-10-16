@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+read -p "Введите путь к директории для архивирования: " directorypath
+
+if [ -d "$directorypath" ]; then
+  current_datetime=$(date +"%Y-%m-%d %H:%M:%S.%3N")
+  archive_name="$(basename "$directorypath")_$current_datetime.tar.gz"
+  tar -cvf "$archive_name" -C "$(dirname "$directorypath")" "$(basename "$directorypath")"
+  echo "Архив '$archive_name' успешно создан."
+else
+  echo "Директория не создана."
+fi
+
