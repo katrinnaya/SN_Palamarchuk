@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh 
 
 read -p "Введите путь к директории для архивирования: " directorypath
 
