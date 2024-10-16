@@ -1,0 +1,11 @@
+#!/bin/bash
+
+diskUsagePercentageThreshold=80
+
+usage=$(df -h | awk '$NF=="/"{print $5}' | sed 's/%//g')
+percentageUsed=$(echo "scale=2; $usage * 100" | bc -l)
+
+if (( $(echo "$percentageUsed > $diskUsagePercentageThreshold" | bc -l) )); then
+    echo "Предупреждение! Использование диска превышает $diskUsagePercentageThreshold%. Пожалуйста, освободите дисковое пространство."
+fi
+
