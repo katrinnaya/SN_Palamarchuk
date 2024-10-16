@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "Введите команду для запуска:"
+read command
+
+eval "$command &"
+
+pid="$!"
+
+echo "PID запущенной команды: $pid"
+
