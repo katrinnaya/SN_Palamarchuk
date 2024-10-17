@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Чтение входных данных
+read -p "Введите первое число: " number1
+read -p "Введите второе число: " number2
+
+# Сравнение чисел
+if (( $number1 > $number2 )); then
+    echo "$number1 больше $number2"
+elif (( $number1 < $number2 )); then
+    echo "$number1 меньше $number2"
+else
+    echo "$number1 равно $number2"
+fi
+
