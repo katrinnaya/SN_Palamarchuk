@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Функция для генерации случайного символа
+random_char() {
+    local chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    echo ${chars:$(( RANDOM % ${#chars} )):1}
+}
+
+# Запрашиваем длину пароля у пользователя
+echo "Введите длину пароля:"
+read length
+
+# Генерация пароля
+password=""
+for i in $(seq 1 $length)
+do
+    password+=$(random_char)
+done
+
+# Вывод пароля
+echo "Сгенерированный пароль: $password"
+
