@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Запрашиваем у пользователя имя файла для мониторинга
+echo "Введите имя файла для мониторинга:"
+read watched_file #указывает на файл, который мы хотим отслеживать.
+
+# Запускаем мониторинг файла
+inotifywait -e modify,close_write,move,create,delete "$watched_file" | #запускает мониторинг событий для указанного файла
+while read -r event action file; do
+    if [[ $action = MODIFY || $action = CLOSE_WRITE || $action = CREATE ]] ; then
+        notify-send "Файл $file изменился!"
+    fi
+done
+
