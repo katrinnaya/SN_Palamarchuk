@@ -1,0 +1,18 @@
+#!/bin/bash
+
+while true; do
+    read -p "Введите команду: " input
+    
+    case $input in
+        "Дата")
+            date +%d-%m-%Y
+            ;;
+        "Время")
+            date +%H:%M
+            ;;
+        *)
+            echo "Неизвестная команда."
+            ;;
+    esac
+done
+
