@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Функция для приветствия
+greet() {
+    read -p "Введите ваше имя: " name
+    echo "Hello, $name"
+}
+
+# Функция для сложения двух чисел
+add_numbers() {
+    read -p "Введите первое число: " num1
+    read -p "Введите второе число: " num2
+    echo "$((num1 + num2))"
+}
+
+# Вызов функций
+greet
+result=$(add_numbers)
+echo "Сумма введенных вами чисел равна: $result"
