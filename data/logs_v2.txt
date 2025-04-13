@@ -1,0 +1,8 @@
+log_id,transaction_id,category,log_message,log_timestamp
+1001,1,payment,"Payment processed",2023-01-15 10:30:05
+1002,1,security,"Fraud check passed",2023-01-15 10:30:10
+1003,2,payment,"Payment processed",2023-01-15 11:45:01
+1004,2,security,"Fraud detected",2023-01-15 11:45:05
+1005,3,payment,"Payment processed",2023-01-16 09:15:03
+1006,4,payment,"Payment processed",2023-01-16 14:20:02
+1007,4,security,"Fraud detected",2023-01-16 14:20:10
