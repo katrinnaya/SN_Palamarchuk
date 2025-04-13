@@ -70,5 +70,127 @@ WHERE currency IN ('USD', 'EUR', 'RUB') -- Фильтр по валютам
 GROUP BY currency
 ORDER BY total_amount DESC;
 ```
-Результат представлен в 
+Результат представлен в файле `req1.txt` папки `data`.
+|currency|transaction_count|total_amount|avg_amount|
+|--------|-----------------|------------|----------|
+|RUB     |3                |11 000,5    |3 666,83  |
+|USD     |2                |196,4       |98,2      |
+|EUR     |2                |150,95      |75,48     |
 
+#### 4.2. Анализ мошеннических транзакций
+Сравниваем показатели нормальных и мошеннических операций.
+```
+SELECT 
+    CASE 
+        WHEN is_fraud = 1 THEN 'Мошенническая' 
+        ELSE 'Нормальная' 
+    END AS transaction_type,
+    COUNT(*) AS transaction_count,
+    ROUND(SUM(amount), 2) AS total_amount,
+    ROUND(AVG(amount), 2) AS avg_amount,
+    MAX(amount) AS max_amount,
+    MIN(amount) AS min_amount
+FROM transactions_v2
+GROUP BY is_fraud
+ORDER BY transaction_type;
+```
+Результат представлен в файле `req2.txt` папки `data`.
+|transaction_type|transaction_count|total_amount|avg_amount|max_amount|min_amount|
+|----------------|-----------------|------------|----------|----------|----------|
+|Мошенническая   |3                |9 865,75    |3 288,58  |7500.00   |2300.00   |
+|Нормальная      |4                |1 482,1     |370,53    |85.20     |1200.50   |
+#### 4.3. Группировка по датам
+Анализируем активность по дням.
+```
+SELECT 
+    DATE(transaction_date) AS transaction_day,
+    COUNT(*) AS daily_count,
+    ROUND(SUM(amount), 2) AS daily_total,
+    ROUND(AVG(amount), 2) AS daily_avg,
+    COUNT(DISTINCT user_id) AS unique_users
+FROM transactions_v2
+GROUP BY DATE(transaction_date)
+ORDER BY transaction_day;
+```
+Результат представлен в файле `req3.txt` папки `data`.
+|transaction_day|daily_count|daily_total|daily_avg|unique_users|
+|---------------|-----------|-----------|---------|------------|
+|2023-01-15     |2          |7 650,5    |3 825,25 |2           |
+|2023-01-16     |2          |2 385,2    |1 192,6  |2           |
+|2023-01-17     |1          |45,9       |45,9     |1           |
+|2023-01-18     |1          |1 200,5    |1 200,5  |1           |
+|2023-01-19     |1          |65,75      |65,75    |1           |
+#### 4.4. Анализ по временным интервалам
+Выводим распределение транзакций по часам/дням/месяцам.
+```
+SELECT 
+    HOUR(transaction_date) AS hour_of_day,
+    DAY(transaction_date) AS day_of_month,
+    MONTH(transaction_date) AS month,
+    COUNT(*) AS transaction_count,
+    ROUND(SUM(amount), 2) AS hourly_volume
+FROM transactions_v2
+GROUP BY 
+    HOUR(transaction_date), 
+    DAY(transaction_date), 
+    MONTH(transaction_date)
+ORDER BY 
+    month, day_of_month, hour_of_day;
+```
+Результат представлен в файле `req4.txt` папки `data`.
+|hour_of_day|day_of_month|month|transaction_count|hourly_volume|
+|-----------|------------|-----|-----------------|-------------|
+|10         |15          |1    |1                |150,5        |
+|11         |15          |1    |1                |7 500        |
+|9          |16          |1    |1                |85,2         |
+|14         |16          |1    |1                |2 300        |
+|16         |17          |1    |1                |45,9         |
+|12         |18          |1    |1                |1 200,5      |
+|8          |19          |1    |1                |65,75        |
+#### 4.5. JOIN с логами (анализ транзакций)
+Связываем транзакции с логами, анализируем категории.
+```
+SELECT 
+    t.transaction_id,
+    t.user_id,
+    t.amount,
+    t.currency,
+    COUNT(l.log_id) AS log_count,
+    COLLECT_LIST(DISTINCT l.category) AS log_categories,
+    SUM(CASE WHEN l.category = 'security' THEN 1 ELSE 0 END) AS security_checks
+FROM transactions_v2 t
+LEFT JOIN logs_v2 l ON t.transaction_id = l.transaction_id
+GROUP BY 
+    t.transaction_id, 
+    t.user_id, 
+    t.amount, 
+    t.currency
+ORDER BY log_count DESC
+LIMIT 10;
+```
+Результат представлен в файле `req5.txt` папки `data`.
+|transaction_id|user_id|amount |currency|log_count|log_categories        |security_checks|
+|--------------|-------|-------|--------|---------|----------------------|---------------|
+|1             |101    |150.50 |USD     |2        |["payment","security"]|1              |
+|4             |101    |2300.00|RUB     |2        |["payment","security"]|1              |
+|2             |102    |7500.00|RUB     |2        |["payment","security"]|1              |
+|3             |103    |85.20  |EUR     |1        |["payment"]           |0              |
+|5             |104    |45.90  |USD     |0        |[]                    |0              |
+|6             |105    |1200.50|RUB     |0        |[]                    |0              |
+|7             |102    |65.75  |EUR     |0        |[]                    |0              |
+#### 4.6. Топ категорий логов
+```
+SELECT 
+    category,
+    COUNT(*) AS category_count,
+    COUNT(DISTINCT transaction_id) AS unique_transactions
+FROM logs_v2
+GROUP BY category
+ORDER BY category_count DESC;
+```
+Результат представлен в файле `req6.txt` папки `data`.
+|category|category_count|unique_transactions|
+|--------|--------------|-------------------|
+|payment |4             |4                  |
+|security|3             |3                  |
+## Часть 2. ClickHouse
