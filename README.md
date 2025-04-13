@@ -194,3 +194,125 @@ ORDER BY category_count DESC;
 |payment |4             |4                  |
 |security|3             |3                  |
 ## Часть 2. ClickHouse
+### 1. Подготовка данных
+Создаем кластер ClickHouse. Файлы предварительно загружаем в Object Storage в бакет `study-backet` папку `data`:
+- `orders` - данные о заказах
+- `order_items` - данные о товарах в заказах
+### 2. Запуск кластера 
+### 3. Подключение к ClickHouse через WebSQL под `admin`
+#### 3.2. Создание таблиц в WebSQL
+```
+-- Таблица заказов
+CREATE TABLE orders (
+    order_id UInt32,
+    user_id UInt32,
+    order_date DateTime,
+    total_amount Decimal(10, 2),
+    payment_status String,
+    delivery_address String
+) ENGINE = MergeTree()
+ORDER BY (order_date, order_id);
+```
+```
+-- Таблица товаров в заказах
+CREATE TABLE order_items (
+    item_id UInt32,
+    order_id UInt32,
+    product_id UInt32,
+    quantity UInt32,
+    price Decimal(10, 2),
+    discount Decimal(5, 2)
+) ENGINE = MergeTree()
+ORDER BY (order_id, item_id);
+```
+![connect_to_clickhouse](https://github.com/katrinnaya/SN_Palamarchuk/blob/hw_yandex_cloud/clickhouse/images/connect_to_clickhouse.png)
+#### 3.3. Наполнение таблиц 
+```
+INSERT INTO orders
+SELECT * FROM s3(
+    'https://storage.yandexcloud.net/study-backet/data/orders.csv',
+    'CSVWithNames'
+);
+```
+```
+INSERT INTO order_items
+SELECT * FROM s3(
+    'https://storage.yandexcloud.net/study-backet/data/order_items.csv',
+    'CSVWithNames'
+);
+```
+#### 3.4. Проверка загрузки данных
+```
+-- Проверка количества строк
+SELECT count() FROM orders;
+SELECT count() FROM order_items;
+```
+```
+-- Просмотр первых 5 записей
+SELECT * FROM orders LIMIT 5;
+SELECT * FROM order_items LIMIT 5;
+```
+### 4. Выполнение задания. SQL-запросы
+#### 4.1. Анализ по статусам платежей
+```
+SELECT 
+    payment_status,
+    count() AS orders_count,
+    sum(total_amount) AS total_amount_sum,
+    round(avg(total_amount), 2) AS avg_order_amount
+FROM orders
+GROUP BY payment_status
+ORDER BY total_amount_sum DESC;
+```
+Результат представлен в файле `req1.txt` папки `data`.
+#### 4.2. Анализ товаров в заказах
+```
+SELECT 
+    o.order_id,
+    o.user_id,
+    COUNT(i.item_id) AS items_count,
+    SUM(i.price * i.quantity) AS items_total,
+    ROUND(AVG(i.price), 2) AS avg_item_price
+FROM orders o
+JOIN order_items i ON o.order_id = i.order_id
+GROUP BY o.order_id, o.user_id
+ORDER BY items_total DESC
+LIMIT 10;
+```
+Результат представлен в файле `req2.txt` папки `data`.
+#### 4.3. Статистика по датам
+```
+SELECT 
+    toDate(order_date) AS order_day,
+    COUNT(*) AS orders_count,
+    SUM(total_amount) AS daily_total
+FROM orders
+GROUP BY order_day
+ORDER BY order_day;
+```
+Результат представлен в файле `req3.txt` папки `data`.
+#### 4.4. Топ пользователей
+```
+SELECT 
+    user_id,
+    COUNT(*) AS orders_count,
+    SUM(total_amount) AS total_spent,
+    ROUND(AVG(total_amount), 2) AS avg_order_value
+FROM orders
+GROUP BY user_id
+ORDER BY total_spent DESC
+LIMIT 5;
+```
+Результат представлен в файле `req4.txt` папки `data`.
+#### 4.5. Популярные товары
+```
+SELECT 
+    product_id,
+    SUM(quantity) AS total_quantity,
+    SUM(quantity * price) AS total_revenue
+FROM order_items
+GROUP BY product_id
+ORDER BY total_revenue DESC
+LIMIT 10;
+```
+Результат представлен в файле `req5.txt` папки `data`.
