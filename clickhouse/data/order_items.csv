@@ -1,0 +1,3 @@
+item_id,order_id,product_id,quantity,price,discount
+1001,1,5001,2,75.25,0.0
+1002,1,5002,1,50.00,0.0
