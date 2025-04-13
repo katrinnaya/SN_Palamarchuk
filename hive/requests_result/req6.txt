@@ -1,0 +1,4 @@
+|category|category_count|unique_transactions|
+|--------|--------------|-------------------|
+|payment |4             |4                  |
+|security|3             |3                  |
