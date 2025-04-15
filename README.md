@@ -193,6 +193,11 @@ ORDER BY category_count DESC;
 |--------|--------------|-------------------|
 |payment |4             |4                  |
 |security|3             |3                  |
+### Визуализация
+![dashboard](https://github.com/katrinnaya/SN_Palamarchuk/blob/hw_yandex_cloud/hive/photos/dashboard.jpg)
+* Анализ мошенничества
+* Распределение логов по категориям
+* Динамика транзакций
 ## Часть 2. ClickHouse
 ### 1. Подготовка данных
 Создаем кластер ClickHouse. Файлы предварительно загружаем в Object Storage в бакет `study-backet` папку `data`:
