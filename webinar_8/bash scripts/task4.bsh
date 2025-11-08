@@ -1,3 +1,0 @@
-#!/bin/zsh
-read file
-cat "$file" | wc -l
