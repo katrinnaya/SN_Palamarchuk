@@ -12,20 +12,27 @@
 * Уровень 4: Сохранение в Iceberg
 
 ## Реализация
-### Шаг 1. Установка Python-зависимостей
+### Шаг 1. Создание окружения
 ```zsh
-pip3 install jupyter pandas matplotlib seaborn trino
+python3 -m venv .venv
 ```
-### Шаг 2. Запуск Docker-контейнеров
+```zsh
+source .venv/bin/activate
+```
+### Шаг 2. Установка Python-зависимостей
+```zsh
+pip install jupyter pandas matplotlib seaborn trino
+```
+### Шаг 3. Запуск Docker-контейнеров
 ```zsh
 docker-compose up -d
 ```
-### Шаг 3. Проверка работы Trino
+### Шаг 4. Проверка работы Trino
 * UI: `http://localhost:8080`
 * Терминал: `docker-compose ps`
-### Шаг 4. Запуск Jupyter Notebook
+### Шаг 5. Запуск Jupyter Notebook
 см. файл `final_homework.ipynb`
-### Шаг 5. Остановка контейнера
+### Шаг 6. Остановка контейнера
 ```zsh
 docker-compose down
 ```
