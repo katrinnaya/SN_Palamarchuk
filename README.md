@@ -13,11 +13,11 @@
 
 ## Реализация
 ### Шаг 1. Установка Python-зависимостей
-```bash
-pip install jupyter pandas matplotlib seaborn trino
+```zsh
+pip3 install jupyter pandas matplotlib seaborn trino
 ```
 ### Шаг 2. Запуск Docker-контейнеров
-```bash
+```zsh
 docker-compose up -d
 ```
 ### Шаг 3. Проверка работы Trino
@@ -26,6 +26,6 @@ docker-compose up -d
 ### Шаг 4. Запуск Jupyter Notebook
 см. файл `final_homework.ipynb`
 ### Шаг 5. Остановка контейнера
-```bash
+```zsh
 docker-compose down
 ```
