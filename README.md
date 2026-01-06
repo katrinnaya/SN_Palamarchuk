@@ -21,7 +21,7 @@ source .venv/bin/activate
 ```
 ### Шаг 2. Установка Python-зависимостей
 ```zsh
-pip install jupyter pandas matplotlib seaborn trino
+pip install psycopg2-binary mysql-connector-python trino pandas matplotlib
 ```
 ### Шаг 3. Запуск Docker-контейнеров
 ```zsh
