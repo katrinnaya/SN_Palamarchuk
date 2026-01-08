@@ -31,7 +31,7 @@ docker-compose up -d
 * UI: `http://localhost:8080`
 * Терминал: `docker-compose ps`
 ### Шаг 5. Запуск Jupyter Notebook
-см. файл `final_homework.ipynb`
+см. файл [final_homework.ipynb](final_homework.ipynb)
 ### Шаг 6. Остановка контейнера
 ```zsh
 docker-compose down
