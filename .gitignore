@@ -1,0 +1,18 @@
+# Docker
+minio_data/
+iceberg_data/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# IDE
+.vscode/

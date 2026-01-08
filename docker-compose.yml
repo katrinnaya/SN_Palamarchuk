@@ -1,0 +1,72 @@
+version: "3.8"
+
+networks:
+  analytics_net:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: demo_db
+    ports:
+      - "55432:5432"
+    networks:
+      - analytics_net
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DATABASE: demo_db
+    ports:
+      - "5506:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - analytics_net
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # MinIO Console
+    volumes:
+      - ./minio_data:/data
+    networks:
+      - analytics_net
+
+  trino:
+    image: trinodb/trino:445
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./trino/catalog:/etc/trino/catalog
+    networks:
+      - analytics_net
+    depends_on:
+      - postgres
+      - mysql
+      - minio
+
+  minio-init:
+    image: minio/mc
+    depends_on:
+      - minio
+    networks:
+      - analytics_net
+    entrypoint: >
+      /bin/sh -c "
+      sleep 10;
+      mc alias set myminio http://minio:9000 admin admin123;
+      mc mb myminio/demo-iceberg-warehouse;
+      mc policy set public myminio/demo-iceberg-warehouse;
+      exit 0;
+      "      
